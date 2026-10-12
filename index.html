@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plazos Hábiles · ¿Cuándo vence mi plazo?</title>
+<meta name="description" content="Calcula gratis cuándo vence un plazo administrativo o judicial en España: días hábiles, festivos, agosto inhábil y prórroga al siguiente día hábil.">
+<link rel="stylesheet" href="style.css"><style>:root{--accent:#f472b6}</style></head><body><div class="wrap">
+<header><div class="logo">📅 Plazos <b>Hábiles</b></div><p>"Tiene 10 días hábiles para presentar alegaciones"… ¿hasta qué día exactamente?</p>
+<span class="tag">Ley 39/2015 · LOPJ · gratis</span></header>
+<div class="card">
+ <div class="g3"><div><label>Fecha de notificación</label><input id="n" type="date"></div><div><label>Nº de días del plazo</label><input id="dias" type="number" value="10" min="1"></div>
+  <div><label>Tipo de plazo</label><select id="tipo"><option value="habiles">Administrativo (días hábiles)</option><option value="naturales">Días naturales</option><option value="judicial">Judicial (agosto inhábil)</option></select></div></div>
+ <label>Festivos autonómicos o locales (opcional, separados por coma: AAAA-MM-DD)</label><input id="ex" placeholder="2026-03-19, 2026-09-11">
+ <button class="btn" id="calc">Calcular vencimiento</button><div id="res"></div></div>
+<div class="note">⚠️ Orientativo. Incluye festivos nacionales; añade los de tu comunidad y municipio. El plazo empieza a contar el día siguiente a la notificación. Ante un plazo importante, confírmalo con el organismo o un profesional.</div>
+<footer>Código abierto · <a href="https://github.com/romebkkk/plazos-habiles" target="_blank">GitHub</a> · Hecho con ❤️ por <a href="https://dataflowelegance.es" target="_blank">DataFlow Elegance</a></footer></div>
+<script src="plazos.js"></script><script>
+var $=function(s){return document.querySelector(s)};$("#n").value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+function fmt(s){return new Date(s+"T12:00:00").toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
+$("#calc").onclick=function(){var r=Plazos.calcular({notificacion:$("#n").value,dias:$("#dias").value,tipo:$("#tipo").value,festivosExtra:$("#ex").value.split(",").map(function(s){return s.trim()})});
+ if(r.error){$("#res").innerHTML='<p class="bad">'+r.error+'</p>';return}
+ $("#res").innerHTML='<div class="card"><small style="color:var(--mut)">Tu plazo vence el</small><div class="big" style="text-transform:capitalize">'+fmt(r.vencimiento)+'</div>'+
+ '<div class="stats"><div class="stat"><b>'+fmt(r.inicio_computo)+'</b><small>empieza a contar</small></div><div class="stat"><b>'+r.dias_inhabiles_saltados+'</b><small>días inhábiles saltados</small></div></div>'+
+ (r.prorrogado_por_inhabil?'<p class="warn">El último día caía en inhábil: se prorroga al siguiente hábil.</p>':'')+'<p style="color:var(--mut);font-size:.9rem">'+r.nota+'</p></div>'};
+</script></body></html>
